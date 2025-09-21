@@ -1,0 +1,9 @@
+set -x
+set -eo pipefail
+
+DB_USER="${POSTGRES_USER:=root}"
+DB_PASSWORD="${POSTGRES_PASSWORD:=root}"
+DB_NAME="${POSTGRES_NAME:=demo}"
+DB_PORT="${POSTGRES_NAME:=5432}"
+
+

@@ -1,7 +1,13 @@
 #[derive(serde::Deserialize)]
 pub struct Settings {
-    pub application_port: String,
+    pub application: Application,
     pub database: DatabaseSettings,
+}
+
+#[derive(serde::Deserialize)]
+pub struct Application {
+    pub host: String,
+    pub port: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -21,6 +27,12 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
         ))
         .build()?;
     settings.try_deserialize::<Settings>()
+}
+
+impl Application {
+    pub fn address(&self) -> String {
+        format!("{}:{}", self.host, self.port)
+    }
 }
 
 impl DatabaseSettings {

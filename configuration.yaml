@@ -1,6 +1,12 @@
 application:
   port: 8080
   host: 127.0.0.1
+email:
+  timeout_milliseconds: 10000
+  base_url: https://api.mailersend.com/v1
+  from_email: MS_N2vO0a@test-2p0347z27v9lzdrn.mlsender.net
+  from_email_name: Rwhither
+  bearer_token: mlsn.552b96405af38b1c2441241099119d24b1e28fb5f33dcffc54fd060795b5ec7b
 database:
   host: 127.0.0.1
   port: 5432

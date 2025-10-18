@@ -6,7 +6,6 @@ edition = "2024"
 [dependencies]
 actix-web = "4"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-reqwest = "0.11"
 serde = { version = "1", features = ["derive"] }
 config = "0.13"
 sqlx = { version = "0.6", default-features = false, features = ["runtime-actix-rustls", "macros", "postgres", "uuid", "chrono", "migrate"] }
@@ -21,6 +20,11 @@ unicode-segmentation = "1.10"
 validator = "0.14"
 fake = "~2.3"
 claim = "0.5"
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }
+wiremock = "0.5"
 
 [lib]
 path = "src/lib.rs"

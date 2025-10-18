@@ -1,8 +1,10 @@
 use once_cell::sync::Lazy;
+use secrecy::ExposeSecret;
 use sqlx::{Connection, PgConnection, PgPool};
 use std::net::TcpListener;
-use secrecy::ExposeSecret;
 use zero2prod::configuration::get_configuration;
+use zero2prod::domain::SubscriberEmail;
+use zero2prod::email_client::EmailClient;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 
 static TRACING: Lazy<()> = Lazy::new(|| {
@@ -89,10 +91,13 @@ async fn spawn_app() -> String {
     let listener = TcpListener::bind("127.0.0.1:0").expect("启动失败");
     let port = listener.local_addr().unwrap().port();
     let configuration = get_configuration().expect("配置失败");
-    let connection_pool = PgPool::connect(&configuration.database.connection_string().expose_secret())
-        .await
-        .expect("数据库连接失败");
-    let server = zero2prod::startup::run(listener, connection_pool).expect("启动失败");
+    let connection_pool =
+        PgPool::connect(&configuration.database.connection_string().expose_secret())
+            .await
+            .expect("数据库连接失败");
+    let email_client = EmailClient::new(configuration.email);
+    let server =
+        zero2prod::startup::run(listener, connection_pool, email_client).expect("启动失败");
     let _ = tokio::spawn(server);
     format!("http://localhost:{}", port)
 }

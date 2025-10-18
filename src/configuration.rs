@@ -4,6 +4,16 @@ use secrecy::{ExposeSecret, Secret};
 pub struct Settings {
     pub application: Application,
     pub database: DatabaseSettings,
+    pub email: EmailSettings,
+}
+
+#[derive(serde::Deserialize, Clone)]
+pub struct EmailSettings {
+    pub bearer_token: Secret<String>,
+    pub base_url: String,
+    pub from_email: String,
+    pub from_email_name: String,
+    pub timeout_milliseconds: u64,
 }
 
 #[derive(serde::Deserialize)]
@@ -34,6 +44,12 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
 impl Application {
     pub fn address(&self) -> String {
         format!("{}:{}", self.host, self.port)
+    }
+}
+
+impl EmailSettings {
+    pub fn timeout(&self) -> std::time::Duration {
+        std::time::Duration::from_millis(self.timeout_milliseconds)
     }
 }
 

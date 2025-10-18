@@ -1,7 +1,8 @@
+use secrecy::ExposeSecret;
 use sqlx::PgPool;
 use std::net::TcpListener;
-use secrecy::ExposeSecret;
 use zero2prod::configuration::get_configuration;
+use zero2prod::email_client::EmailClient;
 use zero2prod::startup;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 
@@ -15,9 +16,13 @@ async fn main() -> std::io::Result<()> {
     init_subscriber(subscriber);
     let configuration = get_configuration().expect("配置失败");
     let address = configuration.application.address();
-    let connection_pool = PgPool::connect(&configuration.database.connection_string().expose_secret())
-        .await
-        .expect("数据库连接失败");
+    let connection_pool =
+        PgPool::connect(&configuration.database.connection_string().expose_secret())
+            .await
+            .expect("数据库连接失败");
     let listener = TcpListener::bind(address).expect("启动失败");
-    startup::run(listener, connection_pool)?.await
+    let email_client = EmailClient::new(
+        configuration.email,
+    );
+    startup::run(listener, connection_pool, email_client)?.await
 }
